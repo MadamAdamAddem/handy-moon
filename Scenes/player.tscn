@@ -1,18 +1,137 @@
-[gd_scene load_steps=4 format=3 uid="uid://csgc6ho16pbjw"]
+[gd_scene load_steps=20 format=3 uid="uid://csgc6ho16pbjw"]
 
 [ext_resource type="Script" uid="uid://drmm2j5ibnm0w" path="res://Scripts/player.gd" id="1_cvnsp"]
-[ext_resource type="Texture2D" uid="uid://lc4sjbkiavp2" path="res://Assets/player.png" id="1_v0iea"]
+[ext_resource type="Texture2D" uid="uid://dpq7ro3apixen" path="res://Assets/handy_idle.png" id="2_vgqql"]
+[ext_resource type="PackedScene" uid="uid://cikrjh2h0qfhp" path="res://Scenes/health_component.tscn" id="3_vgqql"]
+[ext_resource type="PackedScene" uid="uid://mi7337ddly84" path="res://Scenes/hitbox_component.tscn" id="4_vgqql"]
+[ext_resource type="Texture2D" uid="uid://cmtvyff17gp41" path="res://Assets/toolbox.png" id="5_fkybt"]
+[ext_resource type="Script" uid="uid://bs8atqb4xbiu0" path="res://Scripts/tool_box.gd" id="5_x3wgy"]
+[ext_resource type="Texture2D" uid="uid://bto77icbfvwcv" path="res://Assets/lazertmp.png" id="7_3smsa"]
+[ext_resource type="Script" uid="uid://bn44gdxqh032k" path="res://Scripts/lazer_melee.gd" id="7_8erm5"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fkybt"]
+atlas = ExtResource("2_vgqql")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x3wgy"]
+atlas = ExtResource("2_vgqql")
+region = Rect2(32, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3smsa"]
+atlas = ExtResource("2_vgqql")
+region = Rect2(64, 0, 32, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8erm5"]
+atlas = ExtResource("2_vgqql")
+region = Rect2(96, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f1ek2"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fkybt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x3wgy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3smsa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8erm5")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 2.0
+}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f60y1"]
 size = Vector2(16, 22)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_fkybt"]
+size = Vector2(10, 25)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_x3wgy"]
+bounce = 0.2
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_vgqql"]
+size = Vector2(20, 15)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_3smsa"]
+size = Vector2(16, 8)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_x3wgy"]
+size = Vector2(12, 2)
+
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
+collision_layer = 2
 script = ExtResource("1_cvnsp")
 
-[node name="PlayerSprite" type="Sprite2D" parent="."]
-texture = ExtResource("1_v0iea")
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_f1ek2")
+animation = &"idle"
+frame_progress = 0.923708
+
+[node name="Remote" type="RemoteTransform2D" parent="PlayerSprite"]
+remote_path = NodePath("../../Melee")
 
 [node name="PlayerCollision" type="CollisionShape2D" parent="."]
+visible = false
 position = Vector2(0, 4)
 shape = SubResource("RectangleShape2D_f60y1")
+
+[node name="HealthComponent" parent="." instance=ExtResource("3_vgqql")]
+visible = false
+collision_layer = 4
+collision_mask = 0
+
+[node name="HurtboxCollision" type="CollisionShape2D" parent="HealthComponent"]
+position = Vector2(0, 2.5)
+shape = SubResource("RectangleShape2D_fkybt")
+
+[node name="ToolBox" type="RigidBody2D" parent="."]
+position = Vector2(0, 18)
+collision_layer = 0
+physics_material_override = SubResource("PhysicsMaterial_x3wgy")
+can_sleep = false
+freeze = true
+script = ExtResource("5_x3wgy")
+metadata/_edit_group_ = true
+
+[node name="ToolBoxHitbox" parent="ToolBox" instance=ExtResource("4_vgqql")]
+collision_layer = 0
+collision_mask = 16
+damage = 2
+canAttack = false
+
+[node name="HitboxColl" type="CollisionShape2D" parent="ToolBox/ToolBoxHitbox"]
+position = Vector2(0, -2.5)
+shape = SubResource("RectangleShape2D_vgqql")
+
+[node name="ToolBoxSprite" type="Sprite2D" parent="ToolBox"]
+texture = ExtResource("5_fkybt")
+
+[node name="ToolBoxColl" type="CollisionShape2D" parent="ToolBox"]
+position = Vector2(0, 1)
+shape = SubResource("RectangleShape2D_3smsa")
+
+[node name="Melee" type="Node2D" parent="."]
+visible = false
+script = ExtResource("7_8erm5")
+
+[node name="MeleeSprite" type="Sprite2D" parent="Melee"]
+position = Vector2(-12, 3)
+scale = Vector2(0.6, 1)
+texture = ExtResource("7_3smsa")
+
+[node name="MeleeHitbox" parent="Melee" instance=ExtResource("4_vgqql")]
+collision_layer = 0
+collision_mask = 16
+damage = 1
+canAttack = false
+
+[node name="HitboxCollision" type="CollisionShape2D" parent="Melee/MeleeHitbox"]
+position = Vector2(-12, 3)
+shape = SubResource("RectangleShape2D_x3wgy")
+disabled = true
