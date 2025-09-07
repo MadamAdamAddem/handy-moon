@@ -24,4 +24,3 @@ script = ExtResource("3_8gbba")
 
 [node name="Enemy" parent="." instance=ExtResource("4_jjvhh")]
 position = Vector2(62, 645)
-movement_disabled = true

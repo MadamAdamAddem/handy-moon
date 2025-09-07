@@ -34,13 +34,14 @@ func _physics_process(delta: float) -> void:
 	this_sprite.scale.x = -1 if velocity.x > 0 else 1 if velocity.x < 0 else this_sprite.scale.x
 	move_and_slide()
 
+
+
 func _process(delta: float) -> void:
-	if global_position.distance_to(tool_box.global_position) < 12:
+	if global_position.distance_to(tool_box.global_position) < 15:
 		tool_box.pickUpToolBox()
 		double_jump_ready = true
-		pass
+
+
 
 func _ready() -> void:
 	Globals.registerPlayer(self)
-	#tool_box.add_collision_exception_with(self)
-	pass

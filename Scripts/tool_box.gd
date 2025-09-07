@@ -16,7 +16,11 @@ func launchToolBox() -> void:
 	is_launched = true
 	visible = true
 	tool_box_hitbox.canAttack = true
-	pass
+	
+func _process(delta: float) -> void:
+	if linear_velocity.y == 0:
+		tool_box_hitbox.canAttack = false
+
 	
 func pickUpToolBox() -> void:
 	freeze = true
